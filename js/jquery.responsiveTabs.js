@@ -190,10 +190,10 @@
     ResponsiveTabs.prototype._loadClasses = function() {
         for (var i=0; i<this.tabs.length; i++) {
             this.tabs[i].tab.addClass(this.options.classes.stateDefault).addClass(this.options.classes.tab);
-            this.tabs[i].anchor.addClass(this.options.classes.anchor);
-            this.tabs[i].panel.addClass(this.options.classes.stateDefault).addClass(this.options.classes.panel);
+            this.tabs[i].anchor.addClass(this.options.classes.anchor).attr('aria-expanded', false).attr('aria-label', this.tabs[i].anchor.text() + ' Tab Toggle');
+            this.tabs[i].panel.addClass(this.options.classes.stateDefault).addClass(this.options.classes.panel).attr('aria-hidden', true);
             this.tabs[i].accordionTab.addClass(this.options.classes.accordionTitle);
-            this.tabs[i].accordionAnchor.addClass(this.options.classes.anchor);
+            this.tabs[i].accordionAnchor.addClass(this.options.classes.anchor).attr('aria-expanded', false).attr('aria-label', this.tabs[i].anchor.text() + ' Toggle');
             if(this.tabs[i].disabled) {
                 this.tabs[i].tab.removeClass(this.options.classes.stateDefault).addClass(this.options.classes.stateDisabled);
                 this.tabs[i].accordionTab.removeClass(this.options.classes.stateDefault).addClass(this.options.classes.stateDisabled);
@@ -332,15 +332,15 @@
         // Set this tab to active
         oTab.active = true;
         // Set active classes to the tab button and accordion tab button
-        oTab.tab.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive);
-        oTab.accordionTab.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive);
+        oTab.tab.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive).find('a').attr('aria-expanded', true);
+        oTab.accordionTab.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive).find('a').attr('aria-expanded', true);
 
         // Run panel transiton
         _this._doTransition(oTab.panel, _this.options.animation, 'open', function() {
             var scrollOnLoad = (e.type !== 'tabs-load' || _this.options.scrollToAccordionOnLoad);
 
             // When finished, set active class to the panel
-            oTab.panel.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive);
+            oTab.panel.removeClass(_this.options.classes.stateDefault).addClass(_this.options.classes.stateActive).attr('aria-hidden', false);
 
             // And if enabled and state is accordion, scroll to the accordion tab
             if(_this.getState() === 'accordion' && _this.options.scrollToAccordion && (!_this._isInView(oTab.accordionTab) || _this.options.animation !== 'default') && scrollOnLoad) {
@@ -386,13 +386,13 @@
             // Deactivate tab
             oTab.active = false;
             // Set default class to the tab button
-            oTab.tab.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault);
+            oTab.tab.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault).find('a').attr('aria-expanded', false);
 
             // Run panel transition
             _this._doTransition(oTab.panel, _this.options.animation, 'close', function() {
                 // Set default class to the accordion tab button and tab panel
-                oTab.accordionTab.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault);
-                oTab.panel.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault);
+                oTab.accordionTab.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault).find('a').attr('aria-expanded', false);
+                oTab.panel.removeClass(_this.options.classes.stateActive).addClass(_this.options.classes.stateDefault).attr('aria-hidden', true);
             }, !doQueue);
 
             this.$element.trigger('tabs-deactivate', oTab);
